@@ -14,6 +14,7 @@
     require_once __DIR__ . '/../app/models/User.php';
     require_once __DIR__ . '/../app/core/JWT.php';
     require_once __DIR__ . '/../app/core/Crypto.php';
+    require_once __DIR__ . '/../app/services/VaultService.php';
 
     define('JWT_SECRET', getAppKey());
 
@@ -117,6 +118,91 @@
                 "encrypted" => $encrypted,
                 "decrypted" => $decrypted
             ]);
+            break;
+
+        case 'vault_add':
+            $payload = requireAuth(); // JWT verified
+            $userId = $payload['uid'];
+
+            $data = json_decode(file_get_contents("php://input"), true);
+
+            $master = $data['master'] ?? '';
+            $title = trim($data['title'] ?? '');
+            $username = trim($data['username'] ?? '');
+            $password = trim($data['password'] ?? '');
+            $url = trim($data['url'] ?? '');
+            $notes = trim($data['notes'] ?? '');
+
+            if (!$master || !$title || !$username || !$password) {
+                jsonResponse(["error" => "Missing required fields"], 400);
+            }
+
+            $vaultService = new VaultService();
+            $vaultService->addEntry($userId, $master, $title, $username, $password, $url, $notes);
+
+            jsonResponse(["message" => "Vault entry added"]);
+            break;
+
+        case 'vault_list':
+            $payload = requireAuth();
+            $userId = $payload['uid'];
+
+            $vaultService = new VaultService();
+            $entries = $vaultService->listEntries($userId);
+
+            // Only send id + title (no encrypted data)
+            $result = array_map(fn($e) => [
+                "id" => $e['id'],
+                "title" => $e['title']
+            ], $entries);
+
+            jsonResponse($result);
+            break;
+
+        case 'vault_get':
+            $payload = requireAuth();
+            $userId = $payload['uid'];
+
+            $data = json_decode(file_get_contents("php://input"), true);
+            $entryId = (int)($data['id'] ?? 0);
+            $master = $data['master'] ?? '';
+
+            if (!$entryId || !$master) {
+                jsonResponse(["error" => "Missing entry id or master password"], 400);
+            }
+
+            $vaultService = new VaultService();
+            $vaultModel = new Vault();
+            $entryRaw = $vaultModel->findById($entryId, $userId);
+
+            if (!$entryRaw) {
+                jsonResponse(["error" => "Entry not found"], 404);
+            }
+
+            try {
+                $decrypted = $vaultService->decryptEntry($entryRaw, $master);
+                jsonResponse($decrypted);
+            } catch (RuntimeException $e) {
+                jsonResponse(["error" => "Invalid master password"], 401);
+            }
+
+            break;
+
+        case 'vault_delete':
+            $payload = requireAuth();
+            $userId = $payload['uid'];
+
+            $data = json_decode(file_get_contents("php://input"), true);
+            $entryId = (int)($data['id'] ?? 0);
+
+            if (!$entryId) {
+                jsonResponse(["error" => "Missing entry id"], 400);
+            }
+
+            $vaultService = new VaultService();
+            $vaultService->decryptEntry($entryId, $userId);
+
+            jsonResponse(["message" => "Entry deleted"]);
             break;
 
         default:
