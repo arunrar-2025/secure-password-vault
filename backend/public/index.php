@@ -13,6 +13,7 @@
     require_once __DIR__ . '/../app/config/security.php';
     require_once __DIR__ . '/../app/models/User.php';
     require_once __DIR__ . '/../app/core/JWT.php';
+    require_once __DIR__ . '/../app/core/Crypto.php';
 
     define('JWT_SECRET', getAppKey());
 
@@ -97,7 +98,27 @@
 
             jsonResponse(["token" => $token]);
             break;
-        
+
+        case 'crypto_test':
+            $data = json_decode(file_get_contents("php://input"), true);
+
+            $master = $data['master'] ?? '';
+            if (!$master) jsonResponse(["error" => "master password required"], 400);
+
+            $salt = "static-test-salt";
+
+            $crypto = new Crypto();
+            $key = $crypto->deriveKey($master, $salt);
+
+            $encrypted = $crypto->encrypt("secret-data", $key);
+            $decrypted = $crypto->decrypt($encrypted, $key);
+
+            jsonResponse([
+                "encrypted" => $encrypted,
+                "decrypted" => $decrypted
+            ]);
+            break;
+
         default:
             jsonResponse([
                 "status" => "error",

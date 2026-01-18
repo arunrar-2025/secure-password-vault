@@ -1,3 +1,4 @@
 /backend/storage/logs/*
 /backend/storage/exports/*
 /frontend/node_modules/
+/.idea
