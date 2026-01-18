@@ -1,3 +1,3 @@
-const API_BASE = "http://localhost:8000";
+const API_BASE = "https://sms.dev/GitHub/secure-password-vault/backend/public";
 
 export default API_BASE;
