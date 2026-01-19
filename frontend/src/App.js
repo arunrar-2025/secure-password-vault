@@ -1,14 +1,16 @@
 import { AuthProvider, useAuth } from "./auth/AuthContext";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Vault from "./pages/Vault";
 
 function AppContent() {
-    const { token, logoutUser } = useAuth();
+    const { token } = useAuth();
 
+    // If not logged in → show Auth pages
     if (!token) {
         return (
-            <div>
-                <h2>Password Vault</h2>
+            <div style={{ padding: "20px", fontFamily: "Arial" }}>
+                <h2>Secure Password Vault</h2>
                 <Login />
                 <hr />
                 <Register />
@@ -16,13 +18,8 @@ function AppContent() {
         );
     }
 
-    return (
-        <div>
-            <h2>Vault Dashboard</h2>
-            <p>Logged in successfully.</p>
-            <button onClick={logoutUser}>Logout</button>
-        </div>
-    );
+    // If logged in → show Vault
+    return <Vault />;
 }
 
 export default function App() {
