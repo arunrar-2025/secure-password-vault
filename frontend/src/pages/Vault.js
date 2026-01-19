@@ -73,9 +73,11 @@ export default function Vault() {
     }
 
     return (
-        <div>
+        <div className="container">
+            <div className="topbar">
             <h2>Password Vault</h2>
             <button onClick={logoutUser}>Logout</button>
+            </div>
 
             <hr />
 
@@ -112,9 +114,11 @@ export default function Vault() {
                     .filter(e => e.title.toLowerCase().includes(search.toLowerCase()))
                     .map(e => (
                     <li key={e.id}>
-                        {e.title}
+                        <div className="card">
+                        <h3>{e.title}</h3>
                         <button onClick={()=>handleDecrypt(e.id)}>Open</button>
                         <button onClick={()=>handleDelete(e.id)}>Delete</button>
+                        </div>
                     </li>
                 ))}
             </ul>

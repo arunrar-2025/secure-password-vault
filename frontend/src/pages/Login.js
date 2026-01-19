@@ -22,11 +22,12 @@ export default function Login() {
     }
 
     return (
-        <div>
+        <div className="container">
             <h3>Login</h3>
 
-            {error && <p style={{ color: "red" }}>{error}</p>}
+            {error && <p className="error">{error}</p>}
 
+            <div className="card">
             <form onSubmit={handleSubmit}>
                 <input placeholder="Email" value={email}
                        onChange={(e) => setEmail(e.target.value)} /><br /><br />
@@ -36,6 +37,7 @@ export default function Login() {
 
                 <button>Login</button>
             </form>
+            </div>
         </div>
     );
 }

@@ -21,12 +21,13 @@ export default function Register() {
     }
 
     return (
-        <div>
+        <div className="container">
             <h3>Register</h3>
 
-            {msg && <p style={{ color: "green" }}>{msg}</p>}
-            {error && <p style={{ color: "red" }}>{error}</p>}
+            {msg && <p className="success">{msg}</p>}
+            {error && <p className="error">{error}</p>}
 
+            <div className="card">
             <form onSubmit={handleSubmit}>
                 <input placeholder="Email" value={email}
                        onChange={(e) => setEmail(e.target.value)} /><br /><br />
@@ -36,6 +37,7 @@ export default function Register() {
 
                 <button>Register</button>
             </form>
+            </div>
         </div>
     );
 }

@@ -9,7 +9,7 @@ function AppContent() {
     // If not logged in → show Auth pages
     if (!token) {
         return (
-            <div style={{ padding: "20px", fontFamily: "Arial" }}>
+            <div className="card">
                 <h2>Secure Password Vault</h2>
                 <Login />
                 <hr />
