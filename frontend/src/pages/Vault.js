@@ -21,6 +21,7 @@ export default function Vault() {
     const [password, setPassword] = useState("");
     const [url, setUrl] = useState("");
     const [notes, setNotes] = useState("");
+    const [search, setSearch] = useState("");
 
     async function loadEntries() {
         try {
@@ -102,9 +103,14 @@ export default function Vault() {
 
             <hr />
 
+            <h4>Search</h4>
+            <input placeholder="Search by title..." value={search} onChange={(e) => setSearch(e.target.value)}/>
+
             <h3>Stored Entries</h3>
             <ul>
-                {entries.map(e => (
+                {entries
+                    .filter(e => e.title.toLowerCase().includes(search.toLowerCase()))
+                    .map(e => (
                     <li key={e.id}>
                         {e.title}
                         <button onClick={()=>handleDecrypt(e.id)}>Open</button>
@@ -118,8 +124,14 @@ export default function Vault() {
                     <hr />
                     <h3>Decrypted Entry</h3>
                     <p><b>Title:</b> {selected.title}</p>
-                    <p><b>Username:</b> {selected.username}</p>
-                    <p><b>Password:</b> {selected.password}</p>
+                    <p>
+                        <b>Username:</b> {selected.username}
+                        <button onClick={() => navigator.clipboard.writeText(selected.username)}>Copy</button>
+                    </p>
+                    <p>
+                        <p>Password:</p> {selected.password}
+                        <button onClick={() => navigator.clipboard.writeText(selected.password)}>Copy</button>
+                    </p>
                     <p><b>URL:</b> {selected.url}</p>
                     <p><b>Notes:</b> {selected.notes}</p>
                 </>
