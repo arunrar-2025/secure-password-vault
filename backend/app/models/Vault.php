@@ -44,6 +44,8 @@
         public function delete(int $id, int $userId): bool
         {
             $stmt = $this->pdo->prepare("DELETE FROM vault_entries WHERE id = :id AND user_id = :uid");
-            return $stmt->execute([':id' => $id, ':uid' => $userId]);
+            $stmt->execute([':id' => $id, ':uid' => $userId]);
+
+            return $stmt->rowCount() > 0;
         }
     }

@@ -208,7 +208,12 @@
             }
 
             $vaultService = new VaultService();
-            $vaultService->decryptEntry($entryId, $userId);
+
+            $deleted = $vaultService->deleteEntry($entryId, $userId);
+
+            if (!$deleted) {
+                jsonResponse(["error" => "Entry not found or not owned by user"], 404);
+            }
 
             jsonResponse(["message" => "Entry deleted"]);
             break;
